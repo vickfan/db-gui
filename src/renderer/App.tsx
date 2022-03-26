@@ -1,6 +1,10 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import icon from '../../assets/icon.svg';
 import './App.css';
+import Test from './Test.tsx'
+import About from './About.tsx'
+import {Link} from 'react-router-dom'
+
 
 const Hello = () => {
   return (
@@ -35,6 +39,15 @@ const Hello = () => {
           </button>
         </a>
       </div>
+
+      <button>
+        <Link to='/about'>go to about page </Link>
+      </button>
+
+      <button>
+        <Link to='/home'>go to my test page </Link>
+      </button>
+      
     </div>
   );
 };
@@ -44,6 +57,8 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Hello />} />
+        <Route path='/home' element = {<Test/>} />
+        <Route path='/about' element={<About/>} />
       </Routes>
     </Router>
   );

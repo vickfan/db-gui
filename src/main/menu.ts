@@ -84,6 +84,13 @@ export default class MenuBuilder {
         },
       ],
     };
+    const subMenuFile: DarwinMenuItemConstructorOptions = {
+      label: 'File',
+      submenu: [
+      {label: 'Import', accelerator: "Command+i"},
+      {label: 'Export', accelerator: "Command+e"}
+      ]
+    };
     const subMenuEdit: DarwinMenuItemConstructorOptions = {
       label: 'Edit',
       submenu: [
