@@ -9,3 +9,11 @@ window.electron.ipcRenderer.once('ipc-example', (arg) => {
   console.log(arg);
 });
 window.electron.ipcRenderer.myPing();
+
+window.electron.ipcRenderer.test()
+
+window.electron.ipcRenderer.once('test msg', (arg)=>{
+  console.log(arg)
+})
+
+window.electron.ipcRenderer.sendMsg('hi')

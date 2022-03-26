@@ -14,6 +14,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+const sqlite3 = require('sqlite3').verbose()
+const util = require('util')
 
 export default class AppUpdater {
   constructor() {
@@ -30,6 +32,18 @@ ipcMain.on('ipc-example', async (event, arg) => {
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
+
+ipcMain.on('test msg', async(event, arg)=>{
+  console.log(arg)
+  // try to insert the msg from react into the db
+  let insertSQL = `INSERT INTO Test (text) VALUES ("${arg}")`
+  try{
+    await util.promisify(db.run.bind(db))(insertSQL);
+    event.reply('test msg', 'have been inserted into db')
+  } catch(e){
+    console.log('cannot insert into db: ' + e)
+  }
+})
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -135,3 +149,12 @@ app
     });
   })
   .catch(console.log);
+
+  // sqlite 3
+
+let db = new sqlite3.Database(path.join(__dirname, "../test.db"), (err) => {
+    if (err) {
+        return console.error(err.message);
+    }
+    console.log("connected to test database");
+});
