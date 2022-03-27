@@ -17,3 +17,15 @@ window.electron.ipcRenderer.once('test msg', (arg)=>{
 })
 
 window.electron.ipcRenderer.sendMsg('hi')
+
+window.electron.ipcRenderer.once('import csv', (arg)=>{
+  console.log(arg)
+})
+
+window.electron.ipcRenderer.once('export csv', (arg)=>{
+  let hiddenElement = document.createElement('a');
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + arg;
+    hiddenElement.target = '_blank';
+    hiddenElement.download = 'people.csv';
+    hiddenElement.click();
+})

@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+const csv = require('csvtojson')
 const sqlite3 = require('sqlite3').verbose()
 const util = require('util')
 
@@ -35,14 +36,40 @@ ipcMain.on('ipc-example', async (event, arg) => {
 
 ipcMain.on('test msg', async(event, arg)=>{
   console.log(arg)
-  // try to insert the msg from react into the db
-  let insertSQL = `INSERT INTO Test (text) VALUES ("${arg}")`
-  try{
-    await util.promisify(db.run.bind(db))(insertSQL);
-    event.reply('test msg', 'have been inserted into db')
-  } catch(e){
-    console.log('cannot insert into db: ' + e)
+})
+
+ipcMain.on('import csv', async(event, arg)=>{
+  console.log(arg)
+  const json = await csv({
+        delimiter: "*",
+    }).fromFile(arg);
+  for (let record of json){
+    let insertSQL = `INSERT INTO Test (text) VALUES ("${record['text']}")`
+    try{
+      await util.promisify(db.run.bind(db))(insertSQL)
+      event.reply('import csv', 'imported into db')
+    } catch (e){
+      console.log('cannot insert into db: ' + e)
+    }
   }
+})
+
+ipcMain.on('export csv', async(event, arg)=>{
+  let getSQL = `SELECT * FROM Test;`
+  let json
+  try{
+    json = await util.promisify(db.all.bind(db))(getSQL)
+  } catch(e){
+    console.log('cannot export to csv' + e)
+  }
+
+  let csvContent = "id,text\r\n";
+  for(let row of json){
+    let rowData = row['id'] + ',' + row['text']
+    csvContent += rowData + '\r\n'
+  }
+  let encodedUri = encodeURI(csvContent)
+  event.reply('export csv', encodedUri)
 })
 
 if (process.env.NODE_ENV === 'production') {
